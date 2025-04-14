@@ -766,11 +766,11 @@
                 <h2 class="text-pretitle">Try a FOAF SPARQL Query to know me</h2>
                   <textarea id="query" style="width:100%; height:120px;">
         
-            SELECT ?a ?c
-            WHERE {
-              ?a ?b ?c .
-            }
-            LIMIT 10
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        SELECT ?me ?ontology
+        WHERE {
+          ?me foaf:made ?ontology.
+        } 
               </textarea>
               <br>
               <button onclick="runQuery()">Run Query</button>
@@ -780,7 +780,7 @@
 
               <script>
                 async function runQuery() {
-                  const endpoint = "https://api.triplydb.com/datasets/yuan/TestData/sparql";
+                  const endpoint = "https://api.triplydb.com/datasets/yuan/PersonalProflie/sparql";
                   const query = document.getElementById("query").value;
 
                   const url = endpoint + "?query=" + encodeURIComponent(query);
