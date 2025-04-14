@@ -24,6 +24,44 @@
     <link rel="icon" type="image/png" sizes="32x32" href="32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="16.png">
     <link rel="manifest" href="site.webmanifest">
+        
+    <!-- style of sparql-->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 150px;
+        font-family: monospace;
+        margin-bottom: 10px;
+      }
+
+      .results-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      table {
+        border-collapse: collapse;
+        min-width: 60%;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      th, td {
+        border: none;
+        padding: 8px 12px;
+        text-align: left;
+      }
+
+      th {
+        font-weight: bold;
+      }
+    </style>
 
 </head>
 
@@ -68,6 +106,7 @@
                         <li><a href="#works" class="smoothscroll">Works</a></li>
                         <li><a href="#publications" class="smoothscroll">Publications</a></li>
                         <li><a href="#contact" class="smoothscroll">Contact</a></li>
+                        <li><a href="#playground" class="smoothscroll">Playground</a></li>
                     </ul>
                 </nav>
             </div>
@@ -718,8 +757,65 @@
                 </div>
 
 
-
             </section> <!-- end contact -->
+            
+            <!-- Playground -->
+            <section id="playground" class="s-about target-section">
+
+            <div class="row intro-content wide">
+                <h2 class="text-pretitle">Try a FOAF SPARQL Query to know me</h2>
+                  <textarea id="query" style="width:100%; height:120px;">
+        
+            SELECT ?a ?c
+            WHERE {
+              ?a ?b ?c .
+            }
+            LIMIT 10
+              </textarea>
+              <br>
+              <button onclick="runQuery()">Run Query</button>
+              </div>
+
+              <div id="results"></div>
+
+              <script>
+                async function runQuery() {
+                  const endpoint = "https://api.triplydb.com/datasets/yuan/TestData/sparql";
+                  const query = document.getElementById("query").value;
+
+                  const url = endpoint + "?query=" + encodeURIComponent(query);
+                  const headers = { "Accept": "application/sparql-results+json" };
+
+                  try {
+                    const res = await fetch(url, { headers });
+                    const data = await res.json();
+
+                    const vars = data.head.vars;
+                    const results = data.results.bindings;
+
+                    let html = "<table><thead><tr>";
+                    vars.forEach(v => html += `<th>${v}</th>`);
+                    html += "</tr></thead><tbody>";
+
+                    results.forEach(row => {
+                      html += "<tr>";
+                      vars.forEach(v => {
+                        html += `<td>${row[v]?.value || ""}</td>`;
+                      });
+                      html += "</tr>";
+                    });
+
+                    html += "</tbody></table>";
+                    document.getElementById("results").innerHTML = html;
+                  } catch (err) {
+                    document.getElementById("results").innerHTML =
+                      `<p style="color:red;">Error: ${err.message}</p>`;
+                  }
+                }
+              </script>
+            </section>
+            
+            <!-- end Playground -->
 
         </main> <!-- end s-content -->
 
